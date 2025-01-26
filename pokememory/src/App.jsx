@@ -16,38 +16,52 @@ function App() {
 
             fetch("https://pokeapi.co/api/v2/pokemon/" + rndm)
                 .then(res => res.json())
-                .then(data => randomCardArray.push(data))
+                .then(data => randomCardArray.push(data,data))
         }       
 
         setGameCards(randomCardArray)
 
     }, [])
 
+    console.log("Gamestarted? " + gameStarted)
+
+    function handleStartGame() {
+
+        var newCards = gameCards
+
+        for (let i = newCards.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const temp = newCards[i];
+            newCards[i] = newCards[j];
+            newCards[j] = temp;
+        }
+
+        setGameCards(newCards)
+
+        setGameStarted(true)
+        
+    }
+
+    const gameCardElements = gameCards.map(card => {
+        return (
+            <Playcard
+                imageUrl={ card.sprites.front_default }
+                name={ card.name }
+            />
+        )
+    })
 
     return (
       <>
             <h1>Hi lol</h1>
-            <button onClick={() => setGameStarted(true)}>ShuffleCards</button>
+            {!gameStarted && < button onClick={handleStartGame}>Start Game</button >}
+            <div className="gameField">
 
-            {gameStarted && 
-                <div>
-                    <Playcard
-                        imageUrl={gameCards[0].sprites.front_default}
-                        name={gameCards[0].name}
-                    />
-                    <Playcard
-                        imageUrl={gameCards[1].sprites.front_default}
-                        name={gameCards[1].name}
-                    />
-                    <Playcard
-                        imageUrl={gameCards[2].sprites.front_default}
-                        name={gameCards[2].name}
-                    />
-                    <Playcard
-                        imageUrl={gameCards[3].sprites.front_default}
-                        name={gameCards[3].name}
-                    />
-                </div>}
+                {gameStarted && gameCardElements}
+
+             </div>
+            
+
       </>
   )
 }
